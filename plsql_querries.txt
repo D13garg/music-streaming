@@ -1,0 +1,298 @@
+1. For adding new users into the database 
+ 
+SET SERVEROUTPUT ON; 
+ 
+CREATE OR REPLACE PROCEDURE AddNewUser( 
+    p_firstname IN VARCHAR, 
+    p_lastname IN VARCHAR, 
+    p_email IN VARCHAR2, 
+    p_password IN VARCHAR, 
+    p_gender IN VARCHAR, 
+    p_mobileno IN VARCHAR, 
+    p_country IN VARCHAR, 
+    p_dob IN DATE 
+) 
+AS 
+    v_next_user_id NUMBER; 
+BEGIN 
+     
+    SELECT NVL(MAX(user_id), 0) + 1 INTO v_next_user_id FROM users; 
+ 
+    INSERT INTO users (user_id, u_first_name, u_last_name, u_email, 
+u_password, u_gender, u_mobile_no, u_country, u_dob) 
+    VALUES (v_next_user_id, p_firstname, p_lastname, p_email, 
+p_password, p_gender, p_mobileno, p_country, p_dob); 
+     
+    COMMIT; 
+     
+    DBMS_OUTPUT.PUT_LINE('User added successfully.'); 
+ 
+EXCEPTION 
+    WHEN DUP_VAL_ON_INDEX THEN 
+        DBMS_OUTPUT.PUT_LINE('Error: User with the same user_id already 
+exists.'); 
+    WHEN OTHERS THEN 
+        DBMS_OUTPUT.PUT_LINE('An error occurred while adding the user: 
+' || SQLERRM); 
+END AddNewUser; 
+/ 
+ADDING 1st USER:- 
+ 
+BEGIN 
+    AddNewUser('Abhinav', 'Verma', 'abhinav.verma@example.com', 
+'secure123','M', '9876543210','India',TO_DATE('1995-01-01', 'YYYY-MM
+DD')); 
+END; 
+/ 
+ 
+ADDING 2nd USER:- 
+ 
+BEGIN 
+    AddNewUser('Amit', 'Sharma', 'amit.sharma@example.com', 
+'password123', 'm', '9876543210', 'India', TO_DATE('1990-05-15', 'YYYY
+MM-DD')); 
+END;
+
+
+
+
+
+2. For adding new singers into the database 
+CREATE OR REPLACE PROCEDURE AddNewArtist( 
+    p_firstname IN VARCHAR2, 
+    p_lastname IN VARCHAR2, 
+    p_email IN VARCHAR2, 
+    p_gender IN VARCHAR2, 
+    p_dob IN DATE 
+) 
+AS 
+    v_artist_count NUMBER; 
+    v_next_artist_id NUMBER;
+BEGIN 
+    SELECT COUNT(*) 
+    INTO v_artist_count 
+    FROM artist 
+    WHERE artist_email = p_email; 
+ 
+    IF v_artist_count > 0 THEN 
+        RAISE_APPLICATION_ERROR(-20001, 'Artist already exists.'); 
+    ELSE 
+        SELECT NVL(MAX(artist_id), 0) + 1 INTO v_next_artist_id FROM 
+artist; 
+ 
+        INSERT INTO artist (artist_id, artist_first_name, 
+artist_last_name, artist_email, artist_gender, artist_dob) 
+        VALUES (v_next_artist_id, p_firstname, p_lastname, p_email, 
+p_gender, p_dob); 
+ 
+        COMMIT; 
+ 
+        DBMS_OUTPUT.PUT_LINE('New artist added successfully.'); 
+    END IF; 
+EXCEPTION 
+    WHEN OTHERS THEN 
+        DBMS_OUTPUT.PUT_LINE('An error occurred while adding the 
+artist'); 
+END AddNewArtist; 
+ 
+ADDING SINGER:- 
+ 
+BEGIN 
+    AddNewArtist('John', 'Doe', 'john.doe@example.com', 'm', 
+TO_DATE('1990-01-01', 'YYYY-MM-DD')); 
+END; 
+ 
+BEGIN 
+     AddNewArtist('Jane', 'Smith', 'jane.smith@example.com', 'f', 
+TO_DATE('1985-05-15', 'YYYY-MM-DD')); 
+END; 
+
+
+
+
+
+
+
+
+
+3. For Subscribing the subscriptions available on database 
+ 
+CREATE OR REPLACE PROCEDURE SubscribeToSubscription( 
+    p_user_email IN VARCHAR2, 
+    p_plan_name IN VARCHAR2 
+) 
+AS 
+    v_user_id users.user_id%TYPE; 
+    v_subscription_id Subscription.sub_id%TYPE; 
+    v_subscription_count NUMBER; 
+    plan_add number; 
+BEGIN 
+    FOR user_rec IN (SELECT user_id FROM users WHERE u_email = 
+p_user_email) LOOP 
+        v_user_id := user_rec.user_id; 
+    END LOOP; 
+ 
+    IF v_user_id IS NULL THEN 
+        RAISE_APPLICATION_ERROR(-20001, 'User does not exist.'); 
+    ELSE 
+        FOR sub_rec IN (SELECT s.Sub_id,p.plan_id FROM Subscription s 
+JOIN plan p ON s.Plan_id = p.plan_id WHERE p.plan_name = p_plan_name) 
+LOOP 
+            v_subscription_id := sub_rec.Sub_id; 
+            plan_add:=sub_rec.plan_id; 
+        END LOOP; 
+        IF v_subscription_id IS NULL THEN 
+            RAISE_APPLICATION_ERROR(-20002, 'Subscription plan does not 
+exist.'); 
+        ELSE 
+            SELECT COUNT(*) 
+            INTO v_subscription_count 
+            FROM Subscription 
+            WHERE user_id = v_user_id AND Sub_id = v_subscription_id; 
+ 
+            IF v_subscription_count > 0 THEN 
+                RAISE_APPLICATION_ERROR(-20003, 'User is already 
+subscribed to this subscription.'); 
+            ELSE 
+                INSERT INTO Subscription (Sub_id, Start_Date, End_Date, 
+Plan_id, user_id) 
+                VALUES (v_subscription_id, 
+SYSDATE,Add_months(SYSDATE,plan_add), v_user_id, v_subscription_id); 
+                 
+                COMMIT; 
+                 
+                DBMS_OUTPUT.PUT_LINE('User subscribed successfully.'); 
+            END IF; 
+        END IF; 
+    END IF; 
+PAGE 23 
+EXCEPTION 
+    WHEN OTHERS THEN 
+        DBMS_OUTPUT.PUT_LINE('An error occurred while subscribing to 
+the subscription:' || SQLERRM ); 
+END SubscribeToSubscription; 
+ 
+USER SUBSCRIBING TO DIFFERENT PLANS:- 
+ 
+BEGIN 
+    SubscribeToSubscription('juan@example.com', 'Basic'); 
+end; 
+BEGIN 
+    SubscribeToSubscription('sakura@example.com','Premium'); 
+end; 
+
+
+
+
+
+
+
+
+
+ TRIGGERS 
+ 
+• When a user subscribes to the new subscription 
+CREATE OR REPLACE PROCEDURE SendEmailNotification( 
+    p_subject IN VARCHAR2, 
+    p_message IN VARCHAR2 
+) 
+AS 
+BEGIN 
+    DBMS_OUTPUT.PUT_LINE('Subject: '  p_subject); 
+    DBMS_OUTPUT.PUT_LINE('Message: ' || p_message); 
+     
+END SendEmailNotification; 
+ 
+CREATE OR REPLACE TRIGGER AfterSubscribeToSubscription 
+AFTER INSERT ON subscription 
+FOR EACH ROW 
+DECLARE 
+    v_first_name users.u_first_name%TYPE; 
+BEGIN 
+    SELECT u_first_name INTO v_first_name 
+    FROM users 
+    WHERE user_id = :NEW.user_id; 
+ 
+     SendEmailNotification('Subscription Confirmation', 'Dear '  
+v_first_name  ', thank you for subscribing.'); 
+ 
+END AfterSubscribeToSubscription; 
+ 
+BEGIN 
+    SubscribeToSubscription('juan@example.com', 'Premium'); 
+end;
+
+
+
+
+
+
+
+Updates the count of tracks associated with an album or playlist 
+whenever a new track is added or removed from it. 
+CREATE OR REPLACE TRIGGER TrackCountUpdate 
+AFTER INSERT OR DELETE ON Song 
+FOR EACH ROW 
+DECLARE 
+    v_playlist_id NUMBER; 
+    v_album_id NUMBER; 
+BEGIN 
+    BEGIN 
+        SELECT playlist_id INTO v_playlist_id 
+        FROM TRACKLIST 
+        WHERE SONG_ID = :NEW.SONG_ID; 
+ 
+        IF INSERTING THEN 
+            UPDATE Playlist 
+            SET no_of_songs = no_of_songs + 1 
+            WHERE playlist_id = v_playlist_id; 
+            DBMS_OUTPUT.PUT_LINE('Track added to Playlist ' || 
+v_playlist_id); 
+        ELSIF DELETING THEN 
+            UPDATE Playlist 
+            SET no_of_songs = no_of_songs - 1 
+            WHERE playlist_id = v_playlist_id; 
+            DBMS_OUTPUT.PUT_LINE('Track removed from Playlist ' || 
+v_playlist_id); 
+        END IF; 
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN 
+            NULL;  
+    END; 
+ 
+    BEGIN 
+        SELECT album_id INTO v_album_id 
+        FROM Album 
+        WHERE album_id = :NEW.SONG_ID; -- Assuming SONG_ID corresponds 
+to album_id 
+ 
+        IF INSERTING THEN 
+            UPDATE Album 
+            SET no_of_songs = no_of_songs + 1 
+            WHERE album_id = v_album_id; 
+            DBMS_OUTPUT.PUT_LINE('Track added to Album ' || 
+v_album_id); 
+        ELSIF DELETING THEN 
+            UPDATE Album 
+            SET no_of_songs = no_of_songs - 1 
+            WHERE album_id = v_album_id; 
+            DBMS_OUTPUT.PUT_LINE('Track removed from Album ' || 
+v_album_id); 
+        END IF; 
+    EXCEPTION 
+        WHEN NO_DATA_FOUND THEN 
+            NULL;  
+    END; 
+END; 
+ 
+ 
+Triggering Using Playlist:- 
+ 
+INSERT INTO playlist (playlist_id, playlist_name, creater_id, 
+playlist_type, no_of_songs, playlist_description) 
+VALUES (6, 'winter Hits', 2, 'public', 21, 'The ultimate playlist for 
+winter vibes.'); 
+ 
+INSERT INTO TRACKLIST (SONG_ID, PLAYLIST_ID) VALUES (2, 6); 
+SELECT * FROM Playlist WHERE playlist_id = 6; 
+      

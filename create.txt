@@ -1,0 +1,465 @@
+1. USERS TABLE
+CREATE TABLE users ( 
+    user_id NUMBER PRIMARY KEY, 
+    u_first_name VARCHAR(50) NOT NULL, 
+    u_last_name VARCHAR(50), 
+    u_email VARCHAR(50) NOT NULL UNIQUE, 
+    u_password VARCHAR(20) NOT NULL, 
+    u_mobile_no NUMBER(10), 
+    u_gender CHAR(1) CHECK (u_gender IN ('m', 'f', 'o')), 
+    u_country VARCHAR(20), 
+    u_dob DATE 
+); 
+INSERT INTO users (user_id, u_first_name, u_last_name, u_email, 
+u_password, u_mobile_no, u_gender, u_country, u_dob) 
+VALUES (1, 'Sakura', 'Tanaka', 'sakura@example.com', 'password123', 
+1234567890, 'f', 'Japan', TO_DATE('1995-04-15', 'YYYY-MM-DD')); 
+ 
+INSERT INTO users (user_id, u_first_name, u_last_name, u_email, 
+u_password, u_mobile_no, u_gender, u_country, u_dob) 
+VALUES (2, 'Juan', 'Martinez', 'juan@example.com', 'securepwd', 
+9876543210, 'm', 'Mexico', TO_DATE('1990-09-25', 'YYYY-MM-DD')); 
+ 
+INSERT INTO users (user_id, u_first_name, u_last_name, u_email, 
+u_password, u_mobile_no, u_gender, u_country, u_dob) 
+VALUES (3, 'Amira', 'Ahmed', 'amira@example.com', 'amira123', 
+5555555555, 'f', 'Egypt', TO_DATE('1988-12-10', 'YYYY-MM-DD')); 
+ 
+INSERT INTO users (user_id, u_first_name, u_last_name, u_email, 
+u_password, u_mobile_no, u_gender, u_country, u_dob) 
+VALUES (4, 'Liam', 'O'Connor', 'liam@example.com', 'liam2022', 
+1112223333, 'm', 'Ireland', TO_DATE('1998-07-20', 'YYYY-MM-DD')); 
+ 
+INSERT INTO users (user_id, u_first_name, u_last_name, u_email, 
+u_password, u_mobile_no, u_gender, u_country, u_dob) 
+VALUES (5, 'Mia', 'Johansson', 'mia@example.com', 'mia789', 9998887777, 
+'f', 'Sweden', TO_DATE('1993-02-05', 'YYYY-MM-DD'));
+
+
+2. SUBSCRIPTION TABLE 
+create table Subscription 
+( 
+Sub_id number, 
+Start_Date date, 
+End_date date, 
+Plan_id number, 
+user_id number, 
+primary key(sub_id,plan_id), 
+constraint conf1 foreign key (user_id) references users(user_id) 
+constraint conf3 foreign key (plan_id) references plan(plan_id) 
+) 
+ 
+INSERT INTO Subscription (Sub_id, Start_Date, End_date, Plan_id, 
+user_id) 
+VALUES (1, TO_DATE('2022-01-01', 'YYYY-MM-DD'), TO_DATE('2022-12-31', 
+'YYYY-MM-DD'), 101, 1); 
+ 
+INSERT INTO Subscription (Sub_id, Start_Date, End_date, Plan_id, 
+user_id) 
+VALUES (2, TO_DATE('2022-03-15', 'YYYY-MM-DD'), TO_DATE('2022-09-14', 
+'YYYY-MM-DD'), 102, 2); 
+ 
+INSERT INTO Subscription (Sub_id, Start_Date, End_date, Plan_id, 
+user_id) 
+VALUES (3, TO_DATE('2022-02-10', 'YYYY-MM-DD'), TO_DATE('2023-02-09', 
+'YYYY-MM-DD'), 103, 3); 
+ 
+INSERT INTO Subscription (Sub_id, Start_Date, End_date, Plan_id, 
+user_id) 
+VALUES (4, TO_DATE('2022-04-20', 'YYYY-MM-DD'), TO_DATE('2023-04-19', 
+'YYYY-MM-DD'), 101, 4); 
+ 
+INSERT INTO Subscription (Sub_id, Start_Date, End_date, Plan_id, 
+user_id) 
+VALUES (5, TO_DATE('2022-05-05', 'YYYY-MM-DD'), TO_DATE('2022-11-04', 
+'YYYY-MM-DD'), 102, 5);
+
+3. PLAN TABLE 
+ 
+create table plan( 
+    plan_id number(10) primary key, 
+    plan_name varchar(20) not null 
+) 
+ 
+INSERT INTO plan (plan_id, plan_name) 
+VALUES (1, 'Basic'); 
+ 
+INSERT INTO plan (plan_id, plan_name) 
+VALUES (2, 'Standard'); 
+ 
+INSERT INTO plan (plan_id, plan_name) 
+VALUES (3, 'Premium'); 
+ 
+INSERT INTO plan (plan_id, plan_name) 
+VALUES (4, 'Family'); 
+ 
+INSERT INTO plan (plan_id, plan_name) 
+VALUES (5, 'Student'); 
+
+
+ 
+4. PLAYLIST TABLE 
+ 
+create table playlist( 
+    playlist_id number primary key, 
+    playlist_name varchar(30), 
+    creater_id number, 
+    playlist_type varchar(20), 
+    no_of_songs number, 
+    playlist_description varchar(100), 
+    constraint conf2 foreign key (creater_id) REFERENCES users(user_id) 
+); 
+ 
+ 
+INSERT INTO playlist (playlist_id, playlist_name, creater_id, 
+playlist_type, no_of_songs, playlist_description) 
+VALUES (1, 'Summer Hits', 1, 'public', 20, 'The ultimate playlist for 
+summer vibes.'); 
+ 
+INSERT INTO playlist (playlist_id, playlist_name, creater_id, 
+playlist_type, no_of_songs, playlist_description) 
+VALUES (2, 'My Relaxation Mix', 2, 'private', 15, 'A collection of 
+calming tunes to unwind.'); 
+ 
+INSERT INTO playlist (playlist_id, playlist_name, creater_id, 
+playlist_type, no_of_songs, playlist_description) 
+VALUES (3, 'Favorite Tracks', 3, 'public', 30, 'All-time favorite songs 
+curated by me.');
+
+INSERT INTO playlist (playlist_id, playlist_name, creater_id, 
+playlist_type, no_of_songs, playlist_description) 
+VALUES (4, 'Workout Beats', 4, 'private', 25, 'Energetic tracks to keep 
+you motivated during workouts.'); 
+ 
+INSERT INTO playlist (playlist_id, playlist_name, creater_id, 
+playlist_type, no_of_songs, playlist_description) 
+VALUES (5, 'Study Focus', 5, 'unlisted', 18, 'Instrumental music 
+perfect for concentration.');
+
+
+
+5. ARTIST TABLE 
+create table artist( 
+    artist_id number(10) primary key, 
+    artist_first_name varchar(20) not null, 
+    artist_last_name varchar(20), 
+    artist_email varchar(40) not null, 
+    artist_gender char(1)  CHECK (artist_gender IN ('m', 'f', 'o')), 
+    artist_dob date, 
+    followers int, 
+    streams number 
+); 
+INSERT INTO artist (artist_id, artist_first_name, artist_last_name, 
+artist_email, artist_gender, artist_dob, followers, streams) 
+VALUES (1, 'John', 'Smith', 'johnsmith@example.com', 'm', 
+TO_DATE('1990-05-15', 'YYYY-MM-DD'), 10000, 5000000); 
+ 
+INSERT INTO artist (artist_id, artist_first_name, artist_last_name, 
+artist_email, artist_gender, artist_dob, followers, streams) 
+VALUES (2, 'Maria', 'Garcia', 'mariagarcia@example.com', 'f', 
+TO_DATE('1985-10-20', 'YYYY-MM-DD'), 8000, 4500000); 
+ 
+INSERT INTO artist (artist_id, artist_first_name, artist_last_name, 
+artist_email, artist_gender, artist_dob, followers, streams) 
+VALUES (3, 'Hiroshi', 'Tanaka', 'hiroshitanaka@example.com', 'm', 
+TO_DATE('1988-03-10', 'YYYY-MM-DD'), 12000, 7000000); 
+ 
+INSERT INTO artist (artist_id, artist_first_name, artist_last_name, 
+artist_email, artist_gender, artist_dob, followers, streams) 
+VALUES (4, 'Sophia', 'Lopez', 'sophialopez@example.com', 'f', 
+TO_DATE('1995-07-25', 'YYYY-MM-DD'), 9000, 5500000);
+
+INSERT INTO artist (artist_id, artist_first_name, artist_last_name, 
+artist_email, artist_gender, artist_dob, followers, streams) 
+VALUES (5, 'Cheng', 'Li', 'chengli@example.com', 'm', TO_DATE('1992-01
+05', 'YYYY-MM-DD'), 11000, 6000000);
+
+
+
+
+
+
+6. ARTIST_GENRE TABLE 
+ 
+create table artist_genre( 
+    artist_id number(10) , 
+    artist_genre varchar(10), 
+    primary key(artist_id,artist_genre), 
+    foreign key (artist_id) references artist(artist_id) 
+) 
+INSERT INTO artist_genre (artist_id, artist_genre) 
+VALUES (1, 'Rock'); 
+ 
+INSERT INTO artist_genre (artist_id, 
+artist_genre) 
+VALUES (2, 'Pop'); 
+ 
+INSERT INTO artist_genre (artist_id, 
+artist_genre) 
+VALUES (3, 'Jazz'); 
+ 
+INSERT INTO artist_genre (artist_id, 
+artist_genre) 
+VALUES (4, 'Hip Hop'); 
+ 
+INSERT INTO artist_genre (artist_id, 
+artist_genre) 
+VALUES (5, 'Electronic'); 
+
+
+
+
+ 
+7. ALBUM TABLE 
+ 
+create table album 
+( 
+album_id number, 
+album_name varchar(50), 
+no_of_songs number, 
+primary key(album_id) 
+)
+
+
+
+INSERT INTO album (album_id, album_name, no_of_songs) 
+VALUES (1, 'Greatest Hits', 15); 
+ 
+INSERT INTO album (album_id, album_name, no_of_songs) 
+VALUES (2, 'Summer Vibes', 12); 
+ 
+INSERT INTO album (album_id, album_name, no_of_songs) 
+VALUES (3, 'Acoustic Sessions', 10); 
+ 
+INSERT INTO album (album_id, album_name, no_of_songs) 
+VALUES (4, '90s Classics', 18); 
+ 
+INSERT INTO album (album_id, album_name, no_of_songs) 
+VALUES (5, 'Chill Beats', 20); 
+ 
+
+
+
+
+
+
+8. ALBUM_GENRE TABLE 
+ 
+create table album_genre( 
+    album_id number, 
+    album_genre varchar(10), 
+    primary key(album_id,album_genre), 
+    foreign key (album_id) references album(album_id) 
+); 
+INSERT INTO album_genre (album_id, album_genre) 
+VALUES (1, 'Rock'); 
+INSERT INTO album_genre (album_id, album_genre)  
+VALUES (2, 'Pop'); 
+ 
+INSERT INTO album_genre (album_id, album_genre) 
+VALUES (3, 'Jazz'); 
+ 
+INSERT INTO album_genre (album_id, album_genre) 
+VALUES (4, 'Hip Hop'); 
+ 
+INSERT INTO album_genre (album_id, album_genre) 
+VALUES (5, 'Electronic'); 
+ 
+
+
+
+
+
+
+9. SONG TABLE 
+create table Song ( 
+Song_id number, 
+Song_name varchar(50) not null, 
+duration number, 
+no_of_views number, 
+no_of_shares number, 
+Rating int, 
+file_path varchar(200), 
+release_date date, 
+album_id number, 
+primary key(song_id), 
+add constraint conf15 foreign key (album_id) refrences 
+album(album_id)); 
+
+
+
+INSERT INTO Song (Song_id, Song_name, duration, no_of_views, 
+no_of_shares, Rating, file_path, release_date) 
+VALUES (1, 'Shape of You', 235, 10000000, 500000, 4, 
+'/audio/shape_of_you.mp3', TO_DATE('2017-01-06', 'YYYY-MM-DD')); 
+ 
+INSERT INTO Song (Song_id, Song_name, duration, no_of_views, 
+no_of_shares, Rating, file_path, release_date) 
+VALUES (2, 'Bohemian Rhapsody', 354, 8000000, 400000, 5, 
+'/audio/bohemian_rhapsody.mp3', TO_DATE('1975-10-31', 'YYYY-MM-DD')); 
+ 
+INSERT INTO Song (Song_id, Song_name, duration, no_of_views, 
+no_of_shares, Rating, file_path, release_date) 
+VALUES (3, 'Rolling in the Deep', 228, 6000000, 300000, 4, 
+'/audio/rolling_in_the_deep.mp3', TO_DATE('2010-11-29', 'YYYY-MM-DD')); 
+ 
+INSERT INTO Song (Song_id, Song_name, duration, no_of_views, 
+no_of_shares, Rating, file_path, release_date) 
+VALUES (4, 'Hotel California', 391, 7000000, 350000, 5, 
+'/audio/hotel_california.mp3', TO_DATE('1977-12-08', 'YYYY-MM-DD')); 
+ 
+INSERT INTO Song (Song_id, Song_name, duration, no_of_views, 
+no_of_shares, Rating, file_path, release_date) 
+VALUES (5, 'Billie Jean', 294, 5000000, 250000, 4, 
+'/audio/billie_jean.mp3', TO_DATE('1983-01-02', 'YYYY-MM-DD'));
+
+
+
+
+
+10. SONG-GENRE TABLE 
+ 
+create table song_genre( 
+    song_id number(10) , 
+    song_genre varchar(10), 
+    primary key(song_id,song_genre), 
+    foreign key (song_id) references song(song_id) 
+) 
+ 
+INSERT INTO song_genre (song_id, song_genre) 
+VALUES (1, 'Rock'); 
+ 
+INSERT INTO song_genre (song_id, song_genre) 
+VALUES (2, 'Pop'); 
+ 
+INSERT INTO song_genre (song_id, song_genre) 
+VALUES (3, 'Jazz');
+
+INSERT INTO song_genre (song_id, song_genre) 
+VALUES (4, 'Hip Hop'); 
+ 
+INSERT INTO song_genre (song_id, song_genre) 
+VALUES (5, 'Electronic');
+
+
+
+
+
+11. FOLLOWS TABLE 
+create table FOLLOWS 
+( 
+  USER_ID NUMBER, 
+  ARTIST_ID NUMBER, 
+  PRIMARY KEY(USER_ID,ARTIST_ID), 
+  constraint conf4 foreign key (user_id) REFERENCES users(user_id), 
+  constraint conf5 foreign key (artist_id) REFERENCES artist(artist_id) 
+) 
+ 
+drop table follows 
+ 
+INSERT INTO FOLLOWS (USER_ID, ARTIST_ID) 
+VALUES (1, 1); 
+ 
+INSERT INTO FOLLOWS (USER_ID, ARTIST_ID) 
+VALUES (2, 2); 
+ 
+INSERT INTO FOLLOWS (USER_ID, ARTIST_ID) 
+VALUES (3, 3); 
+ 
+INSERT INTO FOLLOWS (USER_ID, ARTIST_ID) 
+VALUES (4, 4); 
+ 
+INSERT INTO FOLLOWS (USER_ID, ARTIST_ID) 
+VALUES (5, 5) 
+
+
+
+
+
+ 
+12. FEATUREDIN TABLE 
+ 
+create table FEATUREDIN 
+( 
+  ARTIST_ID NUMBER, 
+  ALBUM_ID NUMBER, 
+  PRIMARY KEY(ARTIST_ID,album_id), 
+  constraint conf6 foreign key (artist_id) REFERENCES 
+artist(artist_id), 
+  constraint conf7 foreign key (album_id) REFERENCES album(album_id) 
+) 
+
+
+INSERT INTO FEATUREDIN (ARTIST_ID, ALBUM_ID) 
+VALUES (1, 1);
+
+INSERT INTO FEATUREDIN (ARTIST_ID, ALBUM_ID) 
+VALUES (2, 2); 
+ 
+INSERT INTO FEATUREDIN (ARTIST_ID, ALBUM_ID) 
+VALUES (3, 3); 
+ 
+INSERT INTO FEATUREDIN (ARTIST_ID, ALBUM_ID) 
+VALUES (4, 4); 
+ 
+INSERT INTO FEATUREDIN (ARTIST_ID, ALBUM_ID) 
+VALUES (5, 5); 
+
+
+
+
+
+
+
+
+
+
+13. HISTORY TABLE 
+ 
+create table HISTORY 
+( 
+  USER_ID NUMBER, 
+  SONG_ID NUMBER, 
+  PRIMARY KEY(USER_ID,song_id), 
+    CONSTRAINT conf10 FOREIGN KEY (USER_ID) REFERENCES 
+USERS(USER_ID), 
+    CONSTRAINT conf11 FOREIGN KEY ( SONG_ID) REFERENCES 
+SONG(SONG_ID) 
+) 
+
+ 
+INSERT INTO HISTORY (USER_ID, SONG_ID) VALUES (1, 1); 
+
+INSERT INTO HISTORY (USER_ID, SONG_ID) VALUES (2, 2); 
+
+INSERT INTO HISTORY (USER_ID, SONG_ID) VALUES (3, 3); 
+
+INSERT INTO HISTORY (USER_ID, SONG_ID) VALUES (4, 4); 
+
+INSERT INTO HISTORY (USER_ID, SONG_ID) VALUES (5, 5);
+ 
+
+
+
+
+14. TRACKLIST TABLE 
+  
+CREATE TABLE TRACKLIST ( 
+  SONG_ID NUMBER, 
+  PLAYLIST_ID NUMBER, 
+  PRIMARY KEY (SONG_ID, PLAYLIST_ID), 
+  CONSTRAINT conf8 FOREIGN KEY (SONG_ID) REFERENCES Song(SONG_ID), 
+  CONSTRAINT conf9 FOREIGN KEY (PLAYLIST_ID) REFERENCES 
+Playlist(PLAYLIST_ID) 
+); 
+
+
+INSERT INTO TRACKLIST(SONG_ID,PLAYLIST_ID) VALUES (1, 1); 
+
+INSERT INTO TRACKLIST(SONG_ID,PLAYLIST_ID) VALUES (2, 2); 
+
+INSERT INTO TRACKLIST(SONG_ID,PLAYLIST_ID) VALUES (3, 3);
+ 
+INSERT INTO TRACKLIST(SONG_ID,PLAYLIST_ID) VALUES (4, 4); 
+
+INSERT INTO TRACKLIST(SONG_ID,PLAYLIST_ID) VALUES (5, 5);
